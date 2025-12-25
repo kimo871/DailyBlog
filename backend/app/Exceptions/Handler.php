@@ -95,4 +95,17 @@ class Handler extends ExceptionHandler
         // Return custom message or exception message
         return $messages[$statusCode] ?? $e->getMessage() ?? 'An error occurred';
     }
+
+    protected function unauthenticated($request, AuthenticationException $exception)
+{
+    if ($request->is('api/*') || $request->expectsJson()) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Unauthorized',  // custom message
+            'data' => null
+        ], 401);
+    }
+
+    return redirect()->guest(route('login'));
+}
 }
