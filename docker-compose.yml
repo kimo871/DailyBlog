@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: dailyblog
+    ports:
+      - "3306:3306"
+
+  # BACKEND WITH DIFFERENT MOUNT PATH
+  backend:
+    image: php:8.2
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app  # Changed from /var/www/html
+    working_dir: /app   # Changed to match
+    command: php -S 0.0.0.0:8000
+
+  frontend:
+    image: node:18
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/frontend-app  # Different path
+    working_dir: /frontend-app
+    command: npm run dev

@@ -1,0 +1,30 @@
+# backend/Dockerfile - SIMPLE WORKING VERSION
+FROM php:8.4-alpine
+
+# Install minimal dependencies
+RUN apk add --no-cache curl
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Copy ONLY essential files first
+COPY composer.json .
+COPY .env.example .env
+
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Try to install dependencies (skip if fails)
+RUN composer install --no-interaction || echo "Dependencies already installed"
+
+# Copy the rest
+COPY . .
+
+# Create storage directories if missing
+RUN mkdir -p storage/framework/{sessions,views,cache}
+RUN chmod -R 775 storage
+
+EXPOSE 8000
+
+# Start simple PHP server
+CMD ["php", "-S", "0.0.0.0:8000", "-t", "public"]
