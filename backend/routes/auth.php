@@ -11,3 +11,6 @@ Route::prefix('auth')->group(function () {
     Route::get('me', [AuthController::class, 'me'])->middleware('auth:api');
 });
 
+
+require __DIR__ . '/posts/posts.php';
+
