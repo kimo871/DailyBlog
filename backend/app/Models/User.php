@@ -8,6 +8,9 @@ use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Post;
+
+
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -17,7 +20,7 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
-        'image',
+        'image'
     ];
 
     protected $hidden = [
@@ -48,11 +51,11 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-    // // Relationships
-    // public function posts()
-    // {
-    //     return $this->hasMany(Post::class, 'author_id');
-    // }
+    // Relationships
+    public function posts()
+    {
+        return $this->hasMany(Post::class, 'author_id');
+    }
 
     // public function comments()
     // {

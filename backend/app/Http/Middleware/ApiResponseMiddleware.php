@@ -13,18 +13,17 @@ class ApiResponseMiddleware
     $response = $next($request);
 
     if ($response instanceof JsonResponse) {
-        $data = $response->getData(true);
-        if (!isset($data['status']) || $data['status'] === 'success') {
-            $payload = $data;
-            unset($payload['status'], $payload['message']);
+    $data = $response->getData(true);
 
-            return response()->json([
-                'status' => 'success',
-                'message' => $data['message'] ?? 'OK',
-                'data' => $payload,
-            ], $response->status());
-        }
+    // Only wrap if 'status' key is missing
+    if (!isset($data['status'])) {
+        return response()->json([
+            'status' => 'success',
+            'message' => $data['message'] ?? 'OK',
+            'data' => $data,
+        ], $response->status());
     }
+}
 
     return $response;
 }
