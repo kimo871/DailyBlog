@@ -7,8 +7,8 @@ use App\Services\PostService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\CreatePostRequest;
-use App\Http\Requests\UpdatePostRequest;
+use App\Http\Requests\Posts\CreatePostRequest;
+use App\Http\Requests\Posts\UpdatePostRequest;
 use App\Services\AuthService;
 
 class PostController extends Controller
