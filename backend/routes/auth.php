@@ -14,3 +14,4 @@ Route::prefix('auth')->group(function () {
 
 require __DIR__ . '/posts/posts.php';
 
+

@@ -15,7 +15,7 @@ class ApiResponseMiddleware
     if ($response instanceof JsonResponse) {
     $data = $response->getData(true);
 
-    // Only wrap if 'status' key is missing
+    // Only wrap if status key is missing
     if (!isset($data['status'])) {
         return response()->json([
             'status' => 'success',

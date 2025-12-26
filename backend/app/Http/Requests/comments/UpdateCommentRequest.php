@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Comments;
 
-class UpdatePostRequest extends CreatePostRequest
+class UpdateCommentRequest extends CreateCommentRequest
 {
     public function rules(): array
     {
