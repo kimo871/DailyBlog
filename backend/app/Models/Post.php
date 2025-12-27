@@ -53,6 +53,15 @@ class Post extends Model
     }
 
     // eager loaded relations
+
+    public function scopeNotExpired($query)
+    {
+        return $query->where(function($q) {
+            $q->whereNull('expires_at')
+              ->orWhere('expires_at', '>', now());
+        });
+    }
+
     public function ScopeLoadWithUser($query){
         return $query->with('author:id,name,image');
     }

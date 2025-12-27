@@ -109,6 +109,16 @@ class PostService
         ->paginate($perPage);
     }
 
+    public function getPosts(int $perPage = 15)
+    {
+         $posts = Post::notExpired()
+        ->latest()
+        ->paginate($perPage);
+         $posts->getCollection()->load(['author', 'tags', 'comments.user']);
+    
+    return $posts;
+    }
+
     public function canManagePost(User $user, Post $post): bool
     {
         return $post->author_id === $user->id;

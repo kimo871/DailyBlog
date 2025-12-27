@@ -6,6 +6,8 @@ use App\Http\Controllers\Posts\PostController;
 Route::middleware('auth:api')->group(function () {
     Route::post('/posts', [PostController::class, 'createPost']);
     Route::put('/posts/{post}', [PostController::class, 'updatePost']);
+    Route::get('/posts/{post}', [PostController::class, 'getPostById']);
     Route::delete('/posts/{post}', [PostController::class, 'deletePost']);
     Route::get('/me/posts', [PostController::class, 'myPosts']);
+    Route::get('/posts', [PostController::class, 'getPosts']);
 });
