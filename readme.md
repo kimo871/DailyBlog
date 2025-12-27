@@ -1,6 +1,6 @@
-# 🕒 BlogFlow – 24-Hour Blog Platform
+# 🕒 Scribble – 24-Hour Blog Platform
 
-**BlogFlow** is a modern full-stack blog application where posts automatically disappear after 24 hours.  
+**Scribble** is a modern full-stack blog application where posts automatically disappear after 24 hours.  
 It is built using **Laravel**, **React**, **Docker**, and **MySQL**, focusing on clean architecture, authentication, and automated background processing.
 
 ---
