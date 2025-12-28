@@ -6,7 +6,12 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Services\AuthService;
 use App\Services\TagService;
-
+/**
+ * @OA\Tag(
+ *     name="Tags",
+ *     description="Tags management endpoints"
+ * )
+ */
 class TagController extends Controller
 {
     protected $authService;
@@ -17,6 +22,18 @@ class TagController extends Controller
         $this->authService = $authService;
         $this->tagService = $tagService;
     }
+        /**
+     * @OA\Get(
+     *     path="/api/tags",
+     *     tags={"Tags"},
+     *     summary="Get tags",
+     *     description="Retrieve tags",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Tags retrieved successfully",
+     *     ),
+     * )
+     */
     public function getTags(): JsonResponse
     {
         try{

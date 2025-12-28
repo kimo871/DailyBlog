@@ -5,7 +5,13 @@ namespace App\Http\Requests\Comments;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
-
+/**
+ * @OA\Schema(
+ *     schema="CreateCommentRequest",
+ *     required={"body"},
+ *     @OA\Property(property="body", type="string", example="This is the comment"),
+ * )
+ */
 class CreateCommentRequest extends FormRequest
 {
     public function authorize(): bool

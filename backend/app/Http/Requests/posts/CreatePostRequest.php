@@ -6,6 +6,20 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
+/**
+ * @OA\Schema(
+ *     schema="CreatePostRequest",
+ *     required={"title", "body","tags"},
+ *     @OA\Property(property="title", type="string", example="My First Post"),
+ *     @OA\Property(property="body", type="string", example="This is the content of my post"),
+ *     @OA\Property(
+ *         property="tags",
+ *         type="array",
+ *         @OA\Items(type="string", example="laravel"),
+ *     )
+ * )
+ */
+
 class CreatePostRequest extends FormRequest
 {
 
