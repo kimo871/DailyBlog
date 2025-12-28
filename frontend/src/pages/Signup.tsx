@@ -15,20 +15,25 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [file,setFile] = useState(null);
+  const [file, setFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const { signup } = useAuth();
   const navigate = useNavigate();
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    setFile(file);
+
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
+      const fileWithType = new File([file], file.name, {
+        type: file.type,
+        lastModified: file.lastModified,
+      });
+      setFile(fileWithType);
     }
   };
 
@@ -59,12 +64,23 @@ export default function Signup() {
       if (file) {
         formData.append("image", file);
       }
+      for (const [key, value] of formData.entries()) {
+        console.log(key, value);
+      }
       const response = await authService.register(formData);
-      console.log(response?.data)
-      await signup(response?.data?.user , response?.data?.authorization?.token);
+      console.log(response?.data);
+      await signup(response?.data?.user, response?.data?.authorization?.token);
       toast.success("Account created successfully!");
       navigate("/");
     } catch (error) {
+      console.error("Signup error:", error);
+      if (error) {
+        console.error("Response data:", error.response.data);
+        console.error("Response status:", error.response.status);
+        toast.error(error.response.error || "Failed to create account");
+      } else {
+        toast.error("Network error. Please try again.");
+      }
       toast.error("Failed to create account. Please try again.");
     } finally {
       setIsLoading(false);
