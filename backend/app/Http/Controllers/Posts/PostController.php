@@ -76,7 +76,7 @@ class PostController extends Controller
             $user = $this->authService->getCurrentUser();
             if (!$user) {
               return response()->json(['status'=>'error','message'=>'No user found'], 401);
-    }
+            }
             
             $post = $this->postService->createPost(
                 user: $user,
@@ -130,6 +130,10 @@ class PostController extends Controller
     public function getPostById(Post $post): JsonResponse
     {
         try{
+            $user = $this->authService->getCurrentUser();
+            if (!$user) {
+              return response()->json(['status'=>'error','message'=>'No user found'], 401)
+            ;}
             // if post is expired and still not deleted filter it
             if ($post->expires_at && $post->expires_at->isPast()) {
                 return response()->json([
@@ -198,7 +202,15 @@ class PostController extends Controller
         try {
             $user = $this->authService->getCurrentUser();
             if (!$user) {
-              return response()->json(['status'=>'error','message'=>'No user found'], 401);}
+              return response()->json(['status'=>'error','message'=>'No user found'], 401)
+              ;}
+              // check ownership of post to allow this action
+              if ($post->author_id !== $user->id) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'You are not authorized to update this post'
+                 ], 403);
+              }
             $updatedPost = $this->postService->updatePost(
                 post: $post,
                 data: $request->validated(),
@@ -259,8 +271,17 @@ class PostController extends Controller
        try{
             $user = $this->authService->getCurrentUser();
             if (!$user) {
-              return response()->json(['status'=>'error','message'=>'No user found'], 401);}
+              return response()->json(['status'=>'error','message'=>'No user found'], 401)
+            ;}
         
+              // check ownership of post to allow this action
+              if ($post->author_id !== $user->id) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'You are not authorized to delete this post'
+                 ], 403);
+              }
+
             $this->postService->deletePost($post);
         
             return response()->json([
@@ -302,6 +323,9 @@ class PostController extends Controller
     {
         try{
             $user = $this->authService->getCurrentUser();
+            if (!$user) {
+              return response()->json(['status'=>'error','message'=>'No user found'], 401)
+            ;}
             $posts = $this->postService->getUserPosts($user);
             
             return response()->json([
@@ -332,6 +356,9 @@ class PostController extends Controller
     {
         try{
             $user = $this->authService->getCurrentUser();
+            if (!$user) {
+              return response()->json(['status'=>'error','message'=>'No user found'], 401)
+            ;}
             $posts = $this->postService->getPosts();
             
             return response()->json([

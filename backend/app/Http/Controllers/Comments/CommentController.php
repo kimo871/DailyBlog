@@ -108,6 +108,9 @@ class CommentController extends Controller
     {
         try{
             $user = $this->authService->getCurrentUser();
+            if (!$user) {
+              return response()->json(['status'=>'error','message'=>'No user found'], 401);
+            }
 
             if (!$comment->belongsToUser($user->id)) {
                 return response()->json([
@@ -173,6 +176,9 @@ class CommentController extends Controller
     {
         try{
             $user = $this->authService->getCurrentUser();
+            if (!$user) {
+              return response()->json(['status'=>'error','message'=>'No user found'], 401);
+            }
 
             if (!$comment->canBeManagedBy($user->id)) {
                 return response()->json([
