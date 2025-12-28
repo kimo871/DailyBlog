@@ -1,18 +1,19 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { BookOpen, Loader2, Upload } from 'lucide-react';
-import { toast } from 'sonner';
-import { useAuth } from '../contexts/AuthContext';
-import { Label } from '@radix-ui/react-label';
-import { Input } from '../components/ui/input';
-import { Button } from '../components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { BookOpen, Loader2, Upload } from "lucide-react";
+import { toast } from "sonner";
+import { useAuth } from "../contexts/AuthContext";
+import { Label } from "@radix-ui/react-label";
+import { Input } from "../components/ui/input";
+import { Button } from "../components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { authService } from "../api/auth";
 
 export default function Signup() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { signup } = useAuth();
@@ -33,23 +34,36 @@ export default function Signup() {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      toast.error('Passwords do not match');
+      toast.error("Passwords do not match");
       return;
     }
 
     if (password.length < 8) {
-      toast.error('Password must be at least 8 characters');
+      toast.error("Password must be at least 8 characters");
       return;
     }
 
     setIsLoading(true);
 
     try {
-      await signup(name, email, password);
-      toast.success('Account created successfully!');
-      navigate('/');
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("email", email);
+      formData.append("password", password);
+      formData.append("password_confirmation", confirmPassword);
+      const imageInput = document.querySelector(
+        'input[name="image"]'
+      ) as HTMLInputElement;
+      if (imageInput?.files?.[0]) {
+        formData.append("image", imageInput.files[0]);
+      }
+      const response = await authService.register(formData);
+      console.log(response?.data)
+      await signup(response?.data?.user , response?.data?.authorization?.token);
+      toast.success("Account created successfully!");
+      navigate("/");
     } catch (error) {
-      toast.error('Failed to create account. Please try again.');
+      toast.error("Failed to create account. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -63,7 +77,9 @@ export default function Signup() {
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-hero shadow-md">
             <BookOpen className="h-5 w-5 text-primary-foreground" />
           </div>
-          <span className="font-serif text-xl font-bold text-foreground">Scribble</span>
+          <span className="font-serif text-xl font-bold text-foreground">
+            Scribble
+          </span>
         </Link>
       </header>
 
@@ -87,7 +103,7 @@ export default function Signup() {
                   <Avatar className="h-20 w-20 ring-4 ring-border">
                     <AvatarImage src={imagePreview || undefined} />
                     <AvatarFallback className="bg-secondary text-2xl">
-                      {name ? name.charAt(0).toUpperCase() : '?'}
+                      {name ? name.charAt(0).toUpperCase() : "?"}
                     </AvatarFallback>
                   </Avatar>
                   <label
@@ -170,14 +186,17 @@ export default function Signup() {
                     Creating account...
                   </>
                 ) : (
-                  'Create account'
+                  "Create account"
                 )}
               </Button>
             </form>
 
             <div className="mt-6 text-center text-sm text-muted-foreground">
-              Already have an account?{' '}
-              <Link to="/login" className="text-primary font-medium hover:underline">
+              Already have an account?{" "}
+              <Link
+                to="/login"
+                className="text-primary font-medium hover:underline"
+              >
                 Sign in
               </Link>
             </div>

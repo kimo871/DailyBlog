@@ -10,19 +10,6 @@ import { toast } from "sonner";
 import { Header } from "../components/Header";
 import { Button } from "../components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@radix-ui/react-alert-dialog";
-import {
-  AlertDialogFooter,
-  AlertDialogHeader,
-} from "../components/ui/alert-dialog";
 import { CommentSection } from "../components/comments/CommentSection";
 import type { Post, Comment } from "../types";
 import { mockPosts } from "../data/mockData";
@@ -30,6 +17,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { postsService } from "../api/posts";
 import { commentsService } from "../api/comments";
 import { PostCardSkeleton } from "../components/ui/postcard-skeleton";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../components/ui/alert-dialog";
 
 function getTimeRemaining(expiresAt: Date) {
   const now = new Date();
@@ -120,12 +108,8 @@ export default function PostDetail() {
 
   const timeRemaining =
     !isLoading && post && getTimeRemaining(new Date(post?.expires_at));
-  const isAuthor = !isLoading && post && user?.id === post.authorId;
+  const isAuthor = !isLoading && post && user?.id === post?.author?.id;
 
-  const handleDelete = () => {
-    toast.success("Post deleted successfully");
-    navigate("/");
-  };
 
   const handleAddComment = async (body: string) => {
     try {
@@ -184,6 +168,19 @@ export default function PostDetail() {
       });
     } catch (err) {
       console.log(err);
+    }
+  };
+
+  const handleDeletePost = async () => {
+    try {
+      const response = await postsService.deletePost(post?.id);
+      console.log(response);
+      toast.success("Post deleted successfully");
+      navigate("/");
+    } catch (err) {
+      console.log(err);
+    } finally {
+      console.log("finall");
     }
   };
 
@@ -315,7 +312,7 @@ export default function PostDetail() {
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction
-                          onClick={handleDelete}
+                          onClick={handleDeletePost}
                           className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                         >
                           Delete

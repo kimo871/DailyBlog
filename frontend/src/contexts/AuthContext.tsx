@@ -3,22 +3,13 @@ import type { AuthState, User } from "../types";
 
 interface AuthContextType extends AuthState {
   login: (email: string, password: string) => Promise<void>;
-  signup: (name: string, email: string, password: string) => Promise<void>;
+  signup: (user:any, token: string) => Promise<void>;
   logout: () => void;
   updateUser: (user: User) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Mock user for demo purposes
-const mockUser: User = {
-  id: "1",
-  name: "John Doe",
-  email: "john@example.com",
-  image:
-    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
-  createdAt: new Date(),
-};
 
 export function AuthProvider({ children }: any) {
   const [authState, setAuthState] = useState<AuthState>({
@@ -33,6 +24,7 @@ export function AuthProvider({ children }: any) {
     const storedUser = localStorage.getItem("user");
 
     if (token && storedUser) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setAuthState({
         user: JSON.parse(storedUser),
         token,
@@ -54,31 +46,18 @@ export function AuthProvider({ children }: any) {
       });
   };
 
-  const signup = async (name: string, email: string, password: string) => {
-    // Mock signup - replace with actual API call
+  const signup = async (user,token) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    if (name && email && password) {
-      const newUser: User = {
-        ...mockUser,
-        id: Date.now().toString(),
-        name,
-        email,
-      };
-
-      const token = "mock_jwt_token_" + Date.now();
       localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(newUser));
+      localStorage.setItem("user", JSON.stringify(user));
 
       setAuthState({
-        user: newUser,
+        user,
         token,
         isAuthenticated: true,
       });
-    } else {
-      throw new Error("Please fill all fields");
     }
-  };
 
   const logout = () => {
     localStorage.removeItem("token");

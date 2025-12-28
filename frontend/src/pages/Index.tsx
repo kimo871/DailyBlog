@@ -68,7 +68,7 @@ export default function Index() {
 
   // Stats for hero section
   const totalPosts = posts.length;
-  const totalAuthors = new Set(posts.map((p) => p.authorId)).size;
+  const totalAuthors = new Set(posts.map((p) => p?.author?.id)).size;
   const totalComments = posts.reduce((acc, p) => acc + p.comments.length, 0);
 
   return (
