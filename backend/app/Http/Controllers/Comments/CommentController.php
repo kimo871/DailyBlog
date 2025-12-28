@@ -8,6 +8,12 @@ use App\Http\Requests\Comments\UpdateCommentRequest;
 use Illuminate\Http\JsonResponse;
 use App\Services\AuthService;
 
+/**
+ * @OA\Tag(
+ *     name="Comments",
+ *     description="Comment management endpoints"
+ * )
+ */
 class CommentController extends Controller
 {
     protected $authService;
@@ -15,6 +21,36 @@ class CommentController extends Controller
     {
         $this->authService = $authService;
     }
+        /**
+     * @OA\Post(
+     *     path="/api/posts/{post}/comments",
+     *     tags={"Comments"},
+     *     summary="Create a new Comment",
+     *     description="Create a new comment",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/CreateCommentRequest")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Comment created successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="message", type="string", example="Comment created successfully"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *     )
+     * )
+     */
     public function createComment(CreateCommentRequest $request, Post $post): JsonResponse
     {
         try{
@@ -38,7 +74,36 @@ class CommentController extends Controller
             ], 422);
         }
     }
-
+        /**
+     * @OA\Put(
+     *     path="/api/comments/{comment}",
+     *     tags={"Comments"},
+     *     summary="Update a Comment",
+     *     description="Update a  comment",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/UpdateCommentRequest")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Comment Updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="message", type="string", example="Comment updated successfully"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *     )
+     * )
+     */
     public function updateComment(UpdateCommentRequest $request, Comment $comment): JsonResponse
     {
         try{
@@ -68,7 +133,42 @@ class CommentController extends Controller
             ], 422);
         }
     }
-
+    /**
+     * @OA\Delete(
+     *     path="/api/comments/{id}",
+     *     tags={"Comments"},
+     *     summary="Delete a comment",
+     *     description="Delete an existing comment",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Comment ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Comment deleted successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="message", type="string", example="Comment deleted successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden - Not the post owner",
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Post not found",
+     *     )
+     * )
+     */
     public function deleteComment(Comment $comment): JsonResponse
     {
         try{

@@ -11,6 +11,13 @@ use App\Http\Requests\Posts\CreatePostRequest;
 use App\Http\Requests\Posts\UpdatePostRequest;
 use App\Services\AuthService;
 
+/**
+ * @OA\Tag(
+ *     name="Posts",
+ *     description="Post management endpoints"
+ * )
+ */
+
 class PostController extends Controller
 {
     protected $postService;
@@ -33,6 +40,36 @@ class PostController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/posts",
+     *     tags={"Posts"},
+     *     summary="Create a new post",
+     *     description="Create a new post with tags",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/CreatePostRequest")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Post created successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="message", type="string", example="Post created successfully"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *     )
+     * )
+     */
     public function createPost(CreatePostRequest $request): JsonResponse
     {
         try {
@@ -59,7 +96,37 @@ class PostController extends Controller
             ], 422);
         }
     }
-
+    /**
+     * @OA\Get(
+     *     path="/api/posts/{id}",
+     *     tags={"Posts"},
+     *     summary="Get post by ID",
+     *     description="Retrieve a specific post with its author, tags, and comments",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Post ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Post retrieved successfully",
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Post not found",
+     *     ),
+     *     @OA\Response(
+     *         response=410,
+     *         description="Post expired",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="message", type="string", example="This post has expired")
+     *         )
+     *     )
+     * )
+     */
     public function getPostById(Post $post): JsonResponse
     {
         try{
@@ -85,7 +152,47 @@ class PostController extends Controller
             ], 422);
         } 
     }
-
+  /**
+     * @OA\Patch(
+     *     path="/api/posts/{id}",
+     *     tags={"Posts"},
+     *     summary="Update a post",
+     *     description="Update an existing post",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Post ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/UpdatePostRequest")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Post updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="message", type="string", example="Post updated successfully"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden - Not the post owner",
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Post not found",
+     *     )
+     * )
+     */
     public function updatePost(UpdatePostRequest $request, Post $post): JsonResponse
     {
         try {
@@ -110,7 +217,43 @@ class PostController extends Controller
             ], 422);
         }
     }
-
+    /**
+     * @OA\Delete(
+     *     path="/api/posts/{id}",
+     *     tags={"Posts"},
+     *     summary="Delete a post",
+     *     description="Delete an existing post",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Post ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Post deleted successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="message", type="string", example="Post deleted successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden - Not the post owner",
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Post not found",
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     )
+     * )
+     */
     public function deletePost(Post $post): JsonResponse
     {
        try{
@@ -132,7 +275,29 @@ class PostController extends Controller
             ], 422);
         }   
     }
-
+    /**
+     * @OA\Get(
+     *     path="/api/posts/my-posts",
+     *     tags={"Posts"},
+     *     summary="Get authenticated user's posts",
+     *     description="Retrieve all posts created by the authenticated user",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="User posts retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="message", type="string", example="OK"),
+     *             @OA\Property(property="data", type="array", @OA\Items(type="object")),
+     *             @OA\Property(property="pagination", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *     )
+     * )
+     */
     public function myPosts(): JsonResponse
     {
         try{

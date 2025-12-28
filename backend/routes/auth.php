@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\TestSwaggerController;
 
 // auth routes (login,register,logout & me)
 Route::prefix('auth')->group(function () {
@@ -10,6 +11,7 @@ Route::prefix('auth')->group(function () {
     Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:api');
     Route::get('me', [AuthController::class, 'me'])->middleware('auth:api');
 });
+
 
 
 require __DIR__ . '/posts/posts.php';
