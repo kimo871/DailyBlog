@@ -33,4 +33,10 @@ class TagService
         // attach tags to post
         $post->tags()->sync($tags->pluck('id'));
     }
+
+    public function getTags(){
+        $tags = Tag::all();
+    
+    return $tags;
+    }
 }

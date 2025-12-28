@@ -60,7 +60,7 @@ class PostController extends Controller
         }
     }
 
-    public function getPost(Post $post): JsonResponse
+    public function getPostById(Post $post): JsonResponse
     {
         try{
             // if post is expired and still not deleted filter it
@@ -143,6 +143,36 @@ class PostController extends Controller
                 'status' => 'success',
                 'message' => 'OK',
                 'data' => $posts->items(),        // array of posts
+                'pagination' => [
+                    'current_page' => $posts->currentPage(),
+                    'last_page' => $posts->lastPage(),
+                    'per_page' => $posts->perPage(),
+                    'total' => $posts->total(),
+                    'first_page_url' => $posts->url(1),
+                    'last_page_url' => $posts->url($posts->lastPage()),
+                    'next_page_url' => $posts->nextPageUrl(),
+                    'prev_page_url' => $posts->previousPageUrl(),
+                ],
+            ]);
+        }
+        catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 422);
+        } 
+    }
+
+    public function getPosts(): JsonResponse
+    {
+        try{
+            $user = $this->authService->getCurrentUser();
+            $posts = $this->postService->getPosts();
+            
+            return response()->json([
+                'status' => 'success',
+                'message' => 'OK',
+                'data' => $posts->items(), 
                 'pagination' => [
                     'current_page' => $posts->currentPage(),
                     'last_page' => $posts->lastPage(),
