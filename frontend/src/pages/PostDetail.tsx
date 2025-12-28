@@ -29,6 +29,7 @@ import { mockPosts } from "../data/mockData";
 import { useAuth } from "../contexts/AuthContext";
 import { postsService } from "../api/posts";
 import { commentsService } from "../api/comments";
+import { PostCardSkeleton } from "../components/ui/postcard-skeleton";
 
 function getTimeRemaining(expiresAt: Date) {
   const now = new Date();
@@ -56,14 +57,18 @@ export default function PostDetail() {
   const { user } = useAuth();
   const [post, setPost] = useState<Post | null>(null);
   const [timeNow, setTimeNow] = useState(new Date());
+  const [isLoading, setIsLoading] = useState(true);
 
   const getPostById = async () => {
     try {
+      setIsLoading(true);
       const response = await postsService.getPostById(id);
       console.log(response?.data);
       setPost(response?.data);
     } catch (err) {
       console.log(err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -79,7 +84,7 @@ export default function PostDetail() {
     return () => clearInterval(interval);
   }, []);
 
-  if (!post) {
+  if (!post && !isLoading) {
     return (
       <div className="min-h-screen bg-gradient-subtle">
         <Header />
@@ -101,8 +106,21 @@ export default function PostDetail() {
     );
   }
 
-  const timeRemaining = getTimeRemaining(new Date(post.expires_at));
-  const isAuthor = user?.id === post.authorId;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen h-full bg-gradient-subtle flex flex-col justify-center">
+        <div className="w-3/4  mx-auto space-y-6">
+          {Array.from({ length: 1 }).map(() => {
+            return <PostCardSkeleton style={{ minHeight: "90vh" }} />;
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  const timeRemaining =
+    !isLoading && post && getTimeRemaining(new Date(post?.expires_at));
+  const isAuthor = !isLoading && post && user?.id === post.authorId;
 
   const handleDelete = () => {
     toast.success("Post deleted successfully");
@@ -121,7 +139,7 @@ export default function PostDetail() {
         body,
         user_id: user.id,
         user: user,
-        postId: post.id,
+        post_id: post.id,
         created_at: new Date(),
         updated_at: new Date(),
       };
@@ -153,7 +171,7 @@ export default function PostDetail() {
     }
   };
 
-  const handleDeleteComment = async(commentId: string) => {
+  const handleDeleteComment = async (commentId: string) => {
     try {
       if (!user) return;
 
@@ -238,7 +256,7 @@ export default function PostDetail() {
             </div>
 
             <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6 leading-tight">
-              {post.title}
+              {post?.title}
             </h1>
 
             {/* Author info */}
@@ -249,7 +267,9 @@ export default function PostDetail() {
                     src={post?.author?.image}
                     alt={post?.author?.name}
                   />
-                  <AvatarFallback>{post?.author?.name.charAt(0)}</AvatarFallback>
+                  <AvatarFallback>
+                    {post?.author?.name.charAt(0)}
+                  </AvatarFallback>
                 </Avatar>
                 <div>
                   <p className="font-medium text-foreground">
