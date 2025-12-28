@@ -15,12 +15,14 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [file,setFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const { signup } = useAuth();
   const navigate = useNavigate();
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    setFile(file);
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -51,11 +53,11 @@ export default function Signup() {
       formData.append("email", email);
       formData.append("password", password);
       formData.append("password_confirmation", confirmPassword);
-      const imageInput = document.querySelector(
-        'input[name="image"]'
-      ) as HTMLInputElement;
-      if (imageInput?.files?.[0]) {
-        formData.append("image", imageInput.files[0]);
+      // const imageInput = document.querySelector(
+      //   'input[name="image"]'
+      // ) as HTMLInputElement;
+      if (file) {
+        formData.append("image", file);
       }
       const response = await authService.register(formData);
       console.log(response?.data)

@@ -75,10 +75,20 @@ export function CommentSection({
       {isAuthenticated ? (
         <form onSubmit={handleSubmit} className="mb-8">
           <div className="flex gap-4">
-            <Avatar className="h-10 w-10 shrink-0">
-              <AvatarImage src={user?.image} alt={user?.name} />
-              <AvatarFallback>{user?.name?.charAt(0)}</AvatarFallback>
-            </Avatar>
+            {user?.image_url ? (
+              <img
+                className="size-10 rounded-full"
+                src={`${import.meta.env.VITE_BUCKET_URL}${
+                  user?.image_url ?? user?.image
+                }`}
+              />
+            ) : (
+              <Avatar className="h-10 w-10 ring-2 ring-border hover:ring-primary transition-all duration-200">
+                <AvatarFallback className="bg-secondary text-secondary-foreground font-medium">
+                  {user?.name?.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+            )}
             <div className="flex-1 space-y-3">
               <Textarea
                 value={newComment}
@@ -121,13 +131,20 @@ export function CommentSection({
             key={comment.id}
             className="flex gap-4 rounded-lg border border-border bg-card p-4 animate-fade-in"
           >
-            <Avatar className="h-10 w-10 shrink-0">
-              <AvatarImage
-                src={comment?.user?.image}
-                alt={comment?.user?.name}
+            {comment?.user?.image_url ? (
+              <img
+                className="size-10 rounded-full"
+                src={`${import.meta.env.VITE_BUCKET_URL}${
+                  comment?.user?.image_url ?? comment?.user?.image
+                }`}
               />
-              <AvatarFallback>{comment?.user?.name.charAt(0)}</AvatarFallback>
-            </Avatar>
+            ) : (
+              <Avatar className="h-9 w-9 ring-2 ring-border hover:ring-primary transition-all duration-200">
+                <AvatarFallback className="bg-secondary text-secondary-foreground font-medium">
+                  {comment?.user?.name?.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+            )}
 
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-2 mb-2">
