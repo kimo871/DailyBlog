@@ -66,4 +66,9 @@ Expired posts are checked and deleted automatically without user interaction.
 ### Infrastructure
 - Docker & Docker Compose
 
+## 📚 API Documentation
+### 🎯 Interactive API Documentation
+ -Live Swagger UI available at /docs endpoint
+
+
 
