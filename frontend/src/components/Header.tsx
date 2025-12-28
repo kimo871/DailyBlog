@@ -3,9 +3,17 @@ import { PenLine, LogOut, User, BookOpen } from "lucide-react";
 import { Button } from "./ui/button";
 import { useAuth } from "../contexts/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 export function Header() {
+  const imgurl = import.meta.env.VITE_BUCKET_URL;
+  console.log(imgurl);
   const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -47,20 +55,38 @@ export function Header() {
                     variant="outline"
                     className="relative h-9 w-9 rounded-full p-0"
                   >
-                    <Avatar className="h-9 w-9 ring-2 ring-border hover:ring-primary transition-all duration-200">
-                      <AvatarImage src={user?.image} alt={user?.name} />
-                      <AvatarFallback className="bg-secondary text-secondary-foreground font-medium">
-                        {user?.name?.charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
+                    {user?.image_url ? (
+                      <img
+                        className="size-10 rounded-full"
+                        src={`${import.meta.env.VITE_BUCKET_URL}${
+                          user?.image_url ?? user?.image
+                        }`}
+                      />
+                    ) : (
+                      <Avatar className="h-9 w-9 ring-2 ring-border hover:ring-primary transition-all duration-200">
+                        <AvatarFallback className="bg-secondary text-secondary-foreground font-medium">
+                          {user?.name?.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    )}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end" forceMount>
                   <div className="flex items-center gap-3 p-3">
-                    <Avatar className="h-10 w-10">
-                      <AvatarImage src={user?.image ?? user?.imageUrl} alt={user?.name} />
-                      <AvatarFallback>{user?.name?.charAt(0)}</AvatarFallback>
-                    </Avatar>
+                    {user?.image_url ? (
+                      <img
+                        className="size-10 rounded-full"
+                        src={`${import.meta.env.VITE_BUCKET_URL}${
+                          user?.image_url ?? user?.image
+                        }`}
+                      />
+                    ) : (
+                      <Avatar className="h-9 w-9 ring-2 ring-border hover:ring-primary transition-all duration-200">
+                        <AvatarFallback className="bg-secondary text-secondary-foreground font-medium">
+                          {user?.name?.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    )}
                     <div className="flex flex-col space-y-0.5">
                       <p className="text-sm font-medium">{user?.name}</p>
                       <p className="text-xs text-muted-foreground">

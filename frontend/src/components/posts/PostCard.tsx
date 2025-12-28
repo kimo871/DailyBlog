@@ -71,18 +71,23 @@ export function PostCard({ post, style }: PostCardProps) {
             to={`/posts/${post?.id}`}
             className="flex items-center gap-3 group/author"
           >
-            <Avatar className="h-10 w-10 ring-2 ring-border group-hover/author:ring-primary transition-all">
-              <AvatarImage
-                src={post?.author?.image ?? post?.author?.imageUrl}
-                alt={post.author.name}
-              />
-              <AvatarFallback className="bg-secondary text-secondary-foreground">
-                {post.author.name.charAt(0)}
-              </AvatarFallback>
-            </Avatar>
+            {post?.author?.image_url ? (
+                      <img
+                        className="size-10 rounded-full"
+                        src={`${import.meta.env.VITE_BUCKET_URL}${
+                          post?.author?.image_url ?? post?.author?.image
+                        }`}
+                      />
+                    ) : (
+                      <Avatar className="h-9 w-9 ring-2 ring-border hover:ring-primary transition-all duration-200">
+                        <AvatarFallback className="bg-secondary text-secondary-foreground font-medium">
+                          {post?.author?.name?.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    )}
             <div>
               <p className="text-sm font-medium text-foreground group-hover/author:text-primary transition-colors">
-                {post.author.name}
+                {post?.author?.name}
               </p>
               <p className="text-xs text-muted-foreground">
                 {formatDistanceToNow(new Date(post?.created_at), {
