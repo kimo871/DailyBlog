@@ -1,7 +1,12 @@
 <?php
 
 namespace App\Http\Requests\Comments;
-
+/**
+ * @OA\Schema(
+ *     schema="UpdateCommentRequest",
+ *     @OA\Property(property="body", type="string", example="This is the comment"),
+ * )
+ */
 class UpdateCommentRequest extends CreateCommentRequest
 {
     public function rules(): array

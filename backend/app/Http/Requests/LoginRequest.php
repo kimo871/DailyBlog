@@ -7,6 +7,26 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
 class LoginRequest extends FormRequest
+/**
+ * @OA\Schema(
+ *     schema="LoginRequest",
+ *     required={"email", "password"},
+ *     @OA\Property(
+ *         property="email",
+ *         type="string",
+ *         format="email",
+ *         maxLength=255,
+ *         example="mohamed@example.com"
+ *     ),
+ *     @OA\Property(
+ *         property="password",
+ *         type="string",
+ *         format="password",
+ *         minLength=8,
+ *         example="password123"
+ *     ),
+ * )
+ */
 {
     public function authorize(): bool
     {
