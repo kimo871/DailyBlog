@@ -16,7 +16,7 @@ export const postsService = {
   },
 
   updatePost: async (id: string, postData: any) => {
-    const response = await apiClient.put(ENDPOINTS.POSTS.BY_ID(id), postData);
+    const response = await apiClient.patch(ENDPOINTS.POSTS.BY_ID(id), postData);
     return response;
   },
 

@@ -13,6 +13,7 @@ import { TagInput } from "../components/tags/TagInput";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { postsService } from "../api/posts";
+import { PostCardSkeleton } from "../components/ui/postcard-skeleton";
 
 function getTimeRemaining(expiresAt: Date) {
   const now = new Date();
@@ -34,28 +35,39 @@ export default function EditPost() {
   const [body, setBody] = useState("");
   const [tags, setTags] = useState<Tag[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const getPostById = async () => {
     try {
+      setIsLoading(true);
       const response = await postsService.getPostById(id);
       console.log(response?.data);
       setPost(response?.data);
-      setTitle(response?.data?.title)
+      setTitle(response?.data?.title);
       setBody(response?.data?.body);
-      setTags(response?.data?.tags)
+      setTags(response?.data?.tags);
     } catch (err) {
       console.log(err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    getPostById()
+    getPostById();
   }, [id]);
 
-  if (!isAuthenticated) {
-    navigate("/login");
-    return null;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen h-full bg-gradient-subtle flex flex-col justify-center">
+        <div className="w-3/4  mx-auto space-y-6">
+          {Array.from({ length: 1 }).map(() => {
+            return <PostCardSkeleton style={{ minHeight: "90vh" }} />;
+          })}
+        </div>
+      </div>
+    );
   }
 
   if (!post) {
@@ -77,36 +89,44 @@ export default function EditPost() {
     );
   }
 
-  if (user?.id !== post.authorId) {
+  if (user?.id !== post?.author?.id) {
     toast.error("You can only edit your own posts");
     navigate("/");
     return null;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    try {
+      e.preventDefault();
 
-    if (!title.trim()) {
-      toast.error("Please add a title");
-      return;
+      if (!title.trim()) {
+        toast.error("Please add a title");
+        return;
+      }
+
+      if (!body.trim()) {
+        toast.error("Please add some content");
+        return;
+      }
+
+      if (tags.length === 0) {
+        toast.error("Please add at least one tag");
+        return;
+      }
+
+      setIsSubmitting(true);
+
+      const response = await postsService.updatePost(post?.id, {
+        ...(title && { title }),
+        ...(body && { body }),
+        ...(tags && { tags: tags.map((tag) => tag?.name) }),
+      });
+      console.log(response);
+      toast.success("Post updated successfully!");
+      navigate(`/posts/${post.id}`);
+    } catch (err) {
+      console.log(err);
     }
-
-    if (!body.trim()) {
-      toast.error("Please add some content");
-      return;
-    }
-
-    if (tags.length === 0) {
-      toast.error("Please add at least one tag");
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    toast.success("Post updated successfully!");
-    navigate(`/posts/${post.id}`);
   };
 
   return (
@@ -116,7 +136,7 @@ export default function EditPost() {
       <main className="container py-12">
         <div className="max-w-3xl mx-auto">
           <Button
-            variant="ghost"
+            variant="secondary"
             className="mb-6"
             onClick={() => navigate(`/posts/${post.id}`)}
           >
@@ -132,7 +152,8 @@ export default function EditPost() {
               <div className="flex items-center gap-2 text-sm text-warning-foreground bg-warning/10 px-3 py-1.5 rounded-full w-fit">
                 <Clock className="h-4 w-4" />
                 <span>
-                  {getTimeRemaining(new Date(post.expiresAt))} until expiration
+                  {getTimeRemaining(new Date(post?.expires_at))} until
+                  expiration
                 </span>
               </div>
             </div>
@@ -184,7 +205,7 @@ export default function EditPost() {
                 </Button>
                 <Button
                   type="submit"
-                  variant="hero"
+                  variant="secondary"
                   size="lg"
                   disabled={isSubmitting}
                   className="gap-2"

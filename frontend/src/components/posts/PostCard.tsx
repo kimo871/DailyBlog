@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Badge, Clock, MessageCircle } from "lucide-react";
+import { Badge, Clock, Edit2, MessageCircle } from "lucide-react";
 import {
   formatDistanceToNow,
   differenceInHours,
@@ -7,6 +7,8 @@ import {
 } from "date-fns";
 import type { Post } from "../../types";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { useAuth } from "../../contexts/AuthContext";
+import { Button } from "../ui/button";
 
 interface PostCardProps {
   post: Post;
@@ -42,6 +44,7 @@ function getTimeRemaining(expiresAt: Date) {
 }
 
 export function PostCard({ post, style }: PostCardProps) {
+  const { user } = useAuth();
   const timeRemaining = getTimeRemaining(new Date(post?.expires_at));
   const excerpt = post.body.replace(/[#*`]/g, "").slice(0, 150) + "...";
 
@@ -88,18 +91,28 @@ export function PostCard({ post, style }: PostCardProps) {
               </p>
             </div>
           </Link>
-
-          <div
-            className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${
-              timeRemaining.isExpired
-                ? "bg-destructive/10 text-destructive"
-                : timeRemaining.isUrgent
-                ? "bg-warning/10 text-warning-foreground animate-pulse-soft"
-                : "bg-success/10 text-success"
-            }`}
-          >
-            <Clock className="h-3 w-3" />
-            {timeRemaining.text}
+          <div className="flex gap-2">
+            <div
+              className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${
+                timeRemaining.isExpired
+                  ? "bg-destructive/10 text-destructive"
+                  : timeRemaining.isUrgent
+                  ? "bg-warning/10 text-warning-foreground animate-pulse-soft"
+                  : "bg-success/10 text-success"
+              }`}
+            >
+              <Clock className="h-3 w-3" />
+              {timeRemaining.text}
+            </div>
+            {user?.id === post?.author?.id && (
+              <div>
+                <Link to={`/posts/${post?.id}/edit`}>
+                  <Button variant="outline" size="icon" className="h-8 w-8">
+                    <Edit2 className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
 
